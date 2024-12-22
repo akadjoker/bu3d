@@ -6,6 +6,9 @@ Node::Node()
 {
     m_id = 0;
     m_name = "";
+    m_castShadows = false;
+    m_shadow = false;
+    m_visible = true;
 }
 
 Node::~Node()

@@ -68,7 +68,7 @@
 #include <cassert>
 #include <time.h>
 #include <climits>
-
+#include <utility>
 #include <SDL2/SDL.h>
 
 typedef unsigned char u8;
@@ -83,19 +83,19 @@ typedef long long s64;
 typedef float f32;
 typedef double f64;
 
-#define GLSL(src) "#version 330\n" #src
+#define GLSL(src) "#version 400 core\n" #src
 
 
 
 
-//#if defined(WIN32) || defined(_WINDOWS) || defined(_WIN32)
+#if defined(WIN32) || defined(_WINDOWS) || defined(_WIN32)
 
 #pragma warning(disable : 4514) // unreferenced inline removed
 #pragma warning(disable : 4820) // padding added
 #pragma warning(disable : 4828) // bytes padding added
 
 
-//#endif
+#endif
 
 
 

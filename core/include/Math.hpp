@@ -599,10 +599,14 @@ public:
 			acosf((-b + c + a) / (2.f * asqrt * csqrt)),
 			acosf((b - c + a) / (2.f * bsqrt * asqrt)));
 	}
-		static Vec3 Lerp(const Vec3 &v1, const Vec3 &v2, float t)
-		{
-			return Vec3(v1.x + (v2.x - v1.x) * t, v1.y + (v2.y - v1.y) * t, v1.z + (v2.z - v1.z) * t);
-		}
+	static Vec3 Lerp(const Vec3 &v1, const Vec3 &v2, float t)
+	{
+		return Vec3(v1.x + (v2.x - v1.x) * t, v1.y + (v2.y - v1.y) * t, v1.z + (v2.z - v1.z) * t);
+	}
+	static float Length(const Vec3 &v)
+	{
+		return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	}
 };
 
 class Vec4
@@ -619,6 +623,9 @@ public:
 	}
 
 	explicit Vec4(Vec3 v) : x(v.x), y(v.y), z(v.z), w(1.0f)
+	{
+	}
+	explicit Vec4( Vec3 v, float w ) : x( v.x ), y( v.y ), z( v.z ), w( w )
 	{
 	}
 
@@ -1333,34 +1340,6 @@ public:
 		return m;
 	}
 
-	static void fastMult43(Mat4 &dst, const Mat4 &m1, const Mat4 &m2)
-	{
-		// Note: dst may not be the same as m1 or m2
-
-		float *dstx = dst.x;
-		const float *m1x = m1.x;
-		const float *m2x = m2.x;
-
-		dstx[0] = m1x[0] * m2x[0] + m1x[4] * m2x[1] + m1x[8] * m2x[2];
-		dstx[1] = m1x[1] * m2x[0] + m1x[5] * m2x[1] + m1x[9] * m2x[2];
-		dstx[2] = m1x[2] * m2x[0] + m1x[6] * m2x[1] + m1x[10] * m2x[2];
-		dstx[3] = 0.0f;
-
-		dstx[4] = m1x[0] * m2x[4] + m1x[4] * m2x[5] + m1x[8] * m2x[6];
-		dstx[5] = m1x[1] * m2x[4] + m1x[5] * m2x[5] + m1x[9] * m2x[6];
-		dstx[6] = m1x[2] * m2x[4] + m1x[6] * m2x[5] + m1x[10] * m2x[6];
-		dstx[7] = 0.0f;
-
-		dstx[8] = m1x[0] * m2x[8] + m1x[4] * m2x[9] + m1x[8] * m2x[10];
-		dstx[9] = m1x[1] * m2x[8] + m1x[5] * m2x[9] + m1x[9] * m2x[10];
-		dstx[10] = m1x[2] * m2x[8] + m1x[6] * m2x[9] + m1x[10] * m2x[10];
-		dstx[11] = 0.0f;
-
-		dstx[12] = m1x[0] * m2x[12] + m1x[4] * m2x[13] + m1x[8] * m2x[14] + m1x[12] * m2x[15];
-		dstx[13] = m1x[1] * m2x[12] + m1x[5] * m2x[13] + m1x[9] * m2x[14] + m1x[13] * m2x[15];
-		dstx[14] = m1x[2] * m2x[12] + m1x[6] * m2x[13] + m1x[10] * m2x[14] + m1x[14] * m2x[15];
-		dstx[15] = 1.0f;
-	}
 
 	static Mat4 Identity()
 	{
@@ -1604,7 +1583,61 @@ public:
 	// ---------------
 	// Other
 	// ---------------
-	
+	static void fastMult43( Mat4 &dst, const Mat4 &m1, const Mat4 &m2 )
+	{
+		// Note: dst may not be the same as m1 or m2
+
+		float *dstx = dst.x;
+		const float *m1x = m1.x;
+		const float *m2x = m2.x;
+		
+		dstx[0] = m1x[0] * m2x[0] + m1x[4] * m2x[1] + m1x[8] * m2x[2];
+		dstx[1] = m1x[1] * m2x[0] + m1x[5] * m2x[1] + m1x[9] * m2x[2];
+		dstx[2] = m1x[2] * m2x[0] + m1x[6] * m2x[1] + m1x[10] * m2x[2];
+		dstx[3] = 0.0f;
+
+		dstx[4] = m1x[0] * m2x[4] + m1x[4] * m2x[5] + m1x[8] * m2x[6];
+		dstx[5] = m1x[1] * m2x[4] + m1x[5] * m2x[5] + m1x[9] * m2x[6];
+		dstx[6] = m1x[2] * m2x[4] + m1x[6] * m2x[5] + m1x[10] * m2x[6];
+		dstx[7] = 0.0f;
+
+		dstx[8] = m1x[0] * m2x[8] + m1x[4] * m2x[9] + m1x[8] * m2x[10];
+		dstx[9] = m1x[1] * m2x[8] + m1x[5] * m2x[9] + m1x[9] * m2x[10];
+		dstx[10] = m1x[2] * m2x[8] + m1x[6] * m2x[9] + m1x[10] * m2x[10];
+		dstx[11] = 0.0f;
+
+		dstx[12] = m1x[0] * m2x[12] + m1x[4] * m2x[13] + m1x[8] * m2x[14] + m1x[12] * m2x[15];
+		dstx[13] = m1x[1] * m2x[12] + m1x[5] * m2x[13] + m1x[9] * m2x[14] + m1x[13] * m2x[15];
+		dstx[14] = m1x[2] * m2x[12] + m1x[6] * m2x[13] + m1x[10] * m2x[14] + m1x[14] * m2x[15];
+		dstx[15] = 1.0f;
+	}
+
+	static Mat4 Inverse( const Mat4 &mat )
+	{
+		Mat4 m( NO_INIT );
+        float d = mat.determinant();
+		if( d == 0 ) return m;
+		d = 1.0f / d;
+		
+		m.c[0][0] = d * (mat.c[1][2]*mat.c[2][3]*mat.c[3][1] - mat.c[1][3]*mat.c[2][2]*mat.c[3][1] + mat.c[1][3]*mat.c[2][1]*mat.c[3][2] - mat.c[1][1]*mat.c[2][3]*mat.c[3][2] - mat.c[1][2]*mat.c[2][1]*mat.c[3][3] + mat.c[1][1]*mat.c[2][2]*mat.c[3][3]);
+		m.c[0][1] = d * (mat.c[0][3]*mat.c[2][2]*mat.c[3][1] - mat.c[0][2]*mat.c[2][3]*mat.c[3][1] - mat.c[0][3]*mat.c[2][1]*mat.c[3][2] + mat.c[0][1]*mat.c[2][3]*mat.c[3][2] + mat.c[0][2]*mat.c[2][1]*mat.c[3][3] - mat.c[0][1]*mat.c[2][2]*mat.c[3][3]);
+		m.c[0][2] = d * (mat.c[0][2]*mat.c[1][3]*mat.c[3][1] - mat.c[0][3]*mat.c[1][2]*mat.c[3][1] + mat.c[0][3]*mat.c[1][1]*mat.c[3][2] - mat.c[0][1]*mat.c[1][3]*mat.c[3][2] - mat.c[0][2]*mat.c[1][1]*mat.c[3][3] + mat.c[0][1]*mat.c[1][2]*mat.c[3][3]);
+		m.c[0][3] = d * (mat.c[0][3]*mat.c[1][2]*mat.c[2][1] - mat.c[0][2]*mat.c[1][3]*mat.c[2][1] - mat.c[0][3]*mat.c[1][1]*mat.c[2][2] + mat.c[0][1]*mat.c[1][3]*mat.c[2][2] + mat.c[0][2]*mat.c[1][1]*mat.c[2][3] - mat.c[0][1]*mat.c[1][2]*mat.c[2][3]);
+		m.c[1][0] = d * (mat.c[1][3]*mat.c[2][2]*mat.c[3][0] - mat.c[1][2]*mat.c[2][3]*mat.c[3][0] - mat.c[1][3]*mat.c[2][0]*mat.c[3][2] + mat.c[1][0]*mat.c[2][3]*mat.c[3][2] + mat.c[1][2]*mat.c[2][0]*mat.c[3][3] - mat.c[1][0]*mat.c[2][2]*mat.c[3][3]);
+		m.c[1][1] = d * (mat.c[0][2]*mat.c[2][3]*mat.c[3][0] - mat.c[0][3]*mat.c[2][2]*mat.c[3][0] + mat.c[0][3]*mat.c[2][0]*mat.c[3][2] - mat.c[0][0]*mat.c[2][3]*mat.c[3][2] - mat.c[0][2]*mat.c[2][0]*mat.c[3][3] + mat.c[0][0]*mat.c[2][2]*mat.c[3][3]);
+		m.c[1][2] = d * (mat.c[0][3]*mat.c[1][2]*mat.c[3][0] - mat.c[0][2]*mat.c[1][3]*mat.c[3][0] - mat.c[0][3]*mat.c[1][0]*mat.c[3][2] + mat.c[0][0]*mat.c[1][3]*mat.c[3][2] + mat.c[0][2]*mat.c[1][0]*mat.c[3][3] - mat.c[0][0]*mat.c[1][2]*mat.c[3][3]);
+		m.c[1][3] = d * (mat.c[0][2]*mat.c[1][3]*mat.c[2][0] - mat.c[0][3]*mat.c[1][2]*mat.c[2][0] + mat.c[0][3]*mat.c[1][0]*mat.c[2][2] - mat.c[0][0]*mat.c[1][3]*mat.c[2][2] - mat.c[0][2]*mat.c[1][0]*mat.c[2][3] + mat.c[0][0]*mat.c[1][2]*mat.c[2][3]);
+		m.c[2][0] = d * (mat.c[1][1]*mat.c[2][3]*mat.c[3][0] - mat.c[1][3]*mat.c[2][1]*mat.c[3][0] + mat.c[1][3]*mat.c[2][0]*mat.c[3][1] - mat.c[1][0]*mat.c[2][3]*mat.c[3][1] - mat.c[1][1]*mat.c[2][0]*mat.c[3][3] + mat.c[1][0]*mat.c[2][1]*mat.c[3][3]);
+		m.c[2][1] = d * (mat.c[0][3]*mat.c[2][1]*mat.c[3][0] - mat.c[0][1]*mat.c[2][3]*mat.c[3][0] - mat.c[0][3]*mat.c[2][0]*mat.c[3][1] + mat.c[0][0]*mat.c[2][3]*mat.c[3][1] + mat.c[0][1]*mat.c[2][0]*mat.c[3][3] - mat.c[0][0]*mat.c[2][1]*mat.c[3][3]);
+		m.c[2][2] = d * (mat.c[0][1]*mat.c[1][3]*mat.c[3][0] - mat.c[0][3]*mat.c[1][1]*mat.c[3][0] + mat.c[0][3]*mat.c[1][0]*mat.c[3][1] - mat.c[0][0]*mat.c[1][3]*mat.c[3][1] - mat.c[0][1]*mat.c[1][0]*mat.c[3][3] + mat.c[0][0]*mat.c[1][1]*mat.c[3][3]);
+		m.c[2][3] = d * (mat.c[0][3]*mat.c[1][1]*mat.c[2][0] - mat.c[0][1]*mat.c[1][3]*mat.c[2][0] - mat.c[0][3]*mat.c[1][0]*mat.c[2][1] + mat.c[0][0]*mat.c[1][3]*mat.c[2][1] + mat.c[0][1]*mat.c[1][0]*mat.c[2][3] - mat.c[0][0]*mat.c[1][1]*mat.c[2][3]);
+		m.c[3][0] = d * (mat.c[1][2]*mat.c[2][1]*mat.c[3][0] - mat.c[1][1]*mat.c[2][2]*mat.c[3][0] - mat.c[1][2]*mat.c[2][0]*mat.c[3][1] + mat.c[1][0]*mat.c[2][2]*mat.c[3][1] + mat.c[1][1]*mat.c[2][0]*mat.c[3][2] - mat.c[1][0]*mat.c[2][1]*mat.c[3][2]);
+		m.c[3][1] = d * (mat.c[0][1]*mat.c[2][2]*mat.c[3][0] - mat.c[0][2]*mat.c[2][1]*mat.c[3][0] + mat.c[0][2]*mat.c[2][0]*mat.c[3][1] - mat.c[0][0]*mat.c[2][2]*mat.c[3][1] - mat.c[0][1]*mat.c[2][0]*mat.c[3][2] + mat.c[0][0]*mat.c[2][1]*mat.c[3][2]);
+		m.c[3][2] = d * (mat.c[0][2]*mat.c[1][1]*mat.c[3][0] - mat.c[0][1]*mat.c[1][2]*mat.c[3][0] - mat.c[0][2]*mat.c[1][0]*mat.c[3][1] + mat.c[0][0]*mat.c[1][2]*mat.c[3][1] + mat.c[0][1]*mat.c[1][0]*mat.c[3][2] - mat.c[0][0]*mat.c[1][1]*mat.c[3][2]);
+		m.c[3][3] = d * (mat.c[0][1]*mat.c[1][2]*mat.c[2][0] - mat.c[0][2]*mat.c[1][1]*mat.c[2][0] + mat.c[0][2]*mat.c[1][0]*mat.c[2][1] - mat.c[0][0]*mat.c[1][2]*mat.c[2][1] - mat.c[0][1]*mat.c[1][0]*mat.c[2][2] + mat.c[0][0]*mat.c[1][1]*mat.c[2][2]);
+		
+		return m;
+	}
 
 	void transformPoint(Vec3 *v) const
 	{

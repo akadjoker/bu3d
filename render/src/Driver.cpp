@@ -46,6 +46,7 @@ void Driver::Init()
     {
         colorMask[i] = true;
     }
+    depthClamp = false;
     totalTextures=0;
     totalCubeTextures=0;
     totalShaders=0;
@@ -117,6 +118,7 @@ Texture2D *Driver::LoadTexture(const char *file_name)
         m_textures.push_back(texture);
         return texture;
     }
+    LogError("Failed to load texture: %s", path.c_str());
     return Texture2D::GetDefaultTexture();
 }
 
@@ -453,6 +455,35 @@ void Driver::SetDepthMask(bool enable)
     {
         glDepthMask(enable);
         depthMask = enable;
+    }
+}
+
+void Driver::SetDepthClamp(bool enable)
+{
+
+     if (!stateMode)
+    {
+        if (enable)
+        {
+            glDisable(GL_DEPTH_CLAMP);
+        }
+        else
+        {
+            glEnable(GL_DEPTH_CLAMP);
+        }
+        return;
+    }
+    if (depthClamp != enable)
+    {
+        if (enable)
+        {
+            glDisable(GL_DEPTH_CLAMP);
+        }
+        else
+        {
+            glEnable(GL_DEPTH_CLAMP);
+        }
+        depthClamp = enable;
     }
 }
 

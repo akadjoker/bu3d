@@ -386,6 +386,10 @@ bool Texture2D::Load(const char* file_name)
 
     unsigned char *data =  stbi_load_from_memory(fileData,bytesRead,&width, &height, &components, 0);
 
+    free(fileData);
+     
+
+ //  unsigned char *data = stbi_load(file_name,&width, &height, &components, 0);//
 
 
     if (data == NULL) 
@@ -394,7 +398,7 @@ bool Texture2D::Load(const char* file_name)
         return false;
     }
 
-      GLenum format=GL_RGBA;
+    GLenum format=GL_RGBA;
     GLenum glFormat = GL_RGBA;
     switch (components) 
     {
@@ -447,11 +451,10 @@ bool Texture2D::Load(const char* file_name)
 
 
 
- //   glBindTexture(GL_TEXTURE_2D, 0);
- //   Log(0, "TEXTURE2D: [ID %i] Create Opengl Texture2D (%d,%d) bpp:%d", id, width, height, components);
+   glBindTexture(GL_TEXTURE_2D, 0);
+   LogInfo( "TEXTURE2D: [ID %i] Create Opengl Texture2D (%d,%d) bpp:%d", id, width, height, components);
 
 
-        free(fileData);
         free(data);
         return true;
 }

@@ -6,6 +6,8 @@
 #include "Entity.hpp"
 #include "Shader.hpp"
 #include "Buffer.hpp"
+#include "Model.hpp"
+#include "Entity.hpp"
 
 const int SHADOW_MAP_CASCADE_COUNT = 4;
 
@@ -25,6 +27,14 @@ public:
 
     void Release();
 
+    Model *AddModel();
+    Model *AddModel(Mesh* mesh);
+    Model *LoadModel(const String& fileName,const VertexFormat& vertexFormat);
+
+    Camera3D *AddCamera();
+    Camera3D *GetMainCamera() const;
+    void SetCamera(Camera3D *camera);
+
     static Scene& Instance();
     static Scene* InstancePtr();
 
@@ -42,8 +52,21 @@ private:
     Shader m_depthShader;
     Shader m_debugShader;
     Cascade cascades[SHADOW_MAP_CASCADE_COUNT];
+    Vector<Model*> m_statics;
+    Vector<Camera3D*> m_cameras;
+    Vector<Entity*> m_entities;
+    Camera3D* m_mainCamera;
+    Mat4 projectionMatrix;
+    Mat4 viewMatrix;
+    Mat4 viewShaderMatrix;
+    Vec3 lightPosition;
+    float updateInterval;
+    float updateTime;
+    bool firstRender;
+
     static Scene* m_singleton;
     bool LoadModelShader();
     bool LoadDepthShader();
     bool LoadPostShader();
+    void updateCascades(float nearClip, float farClip, const Vec3 &lightPos);
 };

@@ -23,6 +23,7 @@
     #include <unistd.h>             // Required for: getch(), chdir() (POSIX), access()
     #define GETCWD getcwd
     #define CHDIR chdir
+    #include <sys/stat.h>           // Required for: access() [Used in FileExists()]
 #endif
 
 #ifdef PLATFORM_WIN

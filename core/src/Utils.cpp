@@ -106,3 +106,28 @@ bool SaveTextFile(const char* fileName, char* text)
 
     return success;
 }
+
+const char *FormatText(const char *text, ...)
+{
+    static char buffers[4][512] = { 0 };
+    static int index = 0;
+
+    char *currentBuffer = buffers[index];
+    memset(currentBuffer, 0, 512);  
+
+    va_list args;
+    va_start(args, text);
+    int requiredByteCount = vsnprintf(currentBuffer, 512, text, args);
+    va_end(args);
+    if (requiredByteCount >= 512)
+    {
+
+        char *truncBuffer = buffers[index] + 512 - 4; 
+        sprintf(truncBuffer, "...");
+    }
+
+    index += 1;    
+    if (index >= 4) index = 0;
+
+    return currentBuffer;
+}

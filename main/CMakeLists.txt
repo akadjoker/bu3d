@@ -18,7 +18,7 @@ if (WIN32)
 
 endif()
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 add_compile_options(
     -Wall 
@@ -57,7 +57,7 @@ endif()
 
 
 if (UNIX)
-    target_link_libraries(main core render scene m SDL2)
+    target_link_libraries(main core render scene m SDL2 GL)
 endif()
 
 #message(STATUS "SDL2 Library Dir: ${LIB_DIR}/")

@@ -58,8 +58,7 @@ Mesh *MeshBuilder::CreateCube(const VertexFormat &vertexFormat, float width, flo
 {
     Mesh *mesh =  CreateMesh(vertexFormat);
 
-   
-     width /= 2;
+      width /= 2;
 	 height /= 2;
 	 length /= 2;
 
@@ -199,6 +198,7 @@ Mesh *MeshBuilder::CreateCube(const VertexFormat &vertexFormat, float width, flo
 	surf->AddFace(0+16,5+16,4+16);
 
     mesh->m_boundingBox.merge(surf->GetBoundingBox());
+
 
 
     
@@ -727,8 +727,10 @@ Mesh *MeshBuilder::CreateTerrain(const VertexFormat& vertexFormat, Pixmap &heigh
 
                   //  Texture2D *texture =  Assets::Instance().CreateTexture(paint);
                     Texture2D *texture = Driver::Instance().LoadTexture(paint);
+                    Material *material = new Material();
+                    material->SetTexture(texture,0);
 
-                    mesh->AddMaterial(new TextureMaterial( texture));
+                    mesh->AddMaterial( material);
 
                   //   Assets::Instance().AddTexture(std::std::string(textureName),texture);
 

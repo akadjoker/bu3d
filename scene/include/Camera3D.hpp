@@ -10,10 +10,14 @@ public:
     Camera3D();
 
 
-    void setPerspective(float fov, float aspectRatio, float near, float far);
+    void setPerspective(float fov, float aspectRatio, float _near, float _far);
     void setView(const Vec3 &position, const Vec3 &target, const Vec3 &up);
     Mat4 getProjection() const;
     Mat4 getView() const;
+    float getFov() const;
+    float getAspectRatio() const;
+    float getNear() const;
+    float getFar() const;
 
 private:
     float m_fov;

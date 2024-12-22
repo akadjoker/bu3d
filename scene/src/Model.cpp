@@ -60,7 +60,8 @@ bool Model::Load(const String &fileName,const VertexFormat& vertexFormat)
         String name    = stream.ReadUTFString();
 
         Texture2D *texture = Driver::Instance().LoadTexture(diffuse.c_str());
-        TextureMaterial *mat =  new TextureMaterial(texture);
+        Material *mat =  new Material();
+        mat->SetTexture(texture,0);
         mesh->AddMaterial(mat);
 
         Logger::Instance().Info("Material %s texture %s",name.c_str(),diffuse.c_str());

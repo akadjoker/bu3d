@@ -181,7 +181,11 @@ int Shader::getUniformLocation(const Chars &uniformName) const
 {
     int location =  glGetUniformLocation(m_program, uniformName.c_str());
       if (location == -1)
+      {
+        
          LogError( "SHADER: [ID %i] Failed to find shader uniform: %s", m_program, uniformName.c_str());
+        // DEBUG_BREAK_IF(true);
+      }
     return location;
 }
 int Shader::getAttribLocation( const Chars &attribName) const

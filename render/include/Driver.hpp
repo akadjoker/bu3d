@@ -62,6 +62,7 @@ class    Driver
      void SetStencilTest(bool enable);
      void SetColorMask(bool r, bool g, bool b, bool a);
      void SetDepthMask(bool enable);
+     void SetDepthClamp(bool enable);
      void SetStencilMask(bool enable);
      void SetBlendFunc(u32 src, u32 dst);
      void SetCullFaceMode(u32 mode);
@@ -139,6 +140,7 @@ class    Driver
      bool depthMask;
      bool stencilMask;
      bool justDepth;
+     bool depthClamp;
      u32 blendSrc;
      u32 blendDst;
      u32 cullFaceMode;

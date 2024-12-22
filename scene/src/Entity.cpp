@@ -1,4 +1,4 @@
-#pragma once
+
 #include "Config.hpp"
 #include "Entity.hpp"
 #include "OS.hpp"
@@ -200,7 +200,9 @@ Frame *Animation::GetFrame(int index)
 bool Animation::Save(const String &path)
 {
 
-    String final_path = path + this->name + ".anim";
+    String final_path = path;
+    final_path += this->name;
+    final_path +=".anim";
 
     FileStream stream(final_path, "wb");
     if (!stream.IsOpen())

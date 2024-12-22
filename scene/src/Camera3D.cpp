@@ -38,3 +38,25 @@ Mat4 Camera3D::getView() const
     m_view = getWorldTransform().inverted();
     return m_view;
 }
+
+float Camera3D::getFov() const
+{
+    return m_fov;
+}
+
+float Camera3D::getAspectRatio() const
+{
+    return m_aspectRatio;
+}
+
+float Camera3D::getNear() const
+{
+    return m_near;
+}
+
+float Camera3D::getFar() const  
+{
+    return m_far;
+}
+
+

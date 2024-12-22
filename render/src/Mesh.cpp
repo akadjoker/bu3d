@@ -44,34 +44,53 @@ VertexFormat::Element::Element(Usage usage, unsigned int size) : usage(usage), s
 bool VertexFormat::Element::operator==(const VertexFormat::Element &e) const { return (size == e.size && usage == e.usage); }
 bool VertexFormat::Element::operator!=(const VertexFormat::Element &e) const { return !(*this == e); }
 
+Material::Material()
+{
+    m_textures[0] = nullptr;
+    m_textures[1] = nullptr;
+    m_textures[2] = nullptr;
+    m_textures[3] = nullptr;
+
+}
+
+Material::~Material()
+{
+}
+
+Material::Material(Texture2D *texture)
+{
+    m_textures[0] = texture;
+    m_textures[1] = nullptr;
+    m_textures[2] = nullptr;
+    m_textures[3] = nullptr;
+}
+
+Material::Material(const String &name, Texture2D *texture)
+{
+    m_textures[0] = texture;
+    m_textures[1] = nullptr;
+    m_textures[2] = nullptr;
+    m_textures[3] = nullptr;
+    m_name = name;
+}
+
+void Material::SetTexture(Texture2D *texture, u32 layer)
+{
+    m_textures[layer] = texture;
+}
+
 //***********************************************************************************************************
 void Material::Bind(Shader *shader)
 {
-
-    (void)shader;
-}
-TextureMaterial::TextureMaterial(Texture2D *texture) : Material("TextureMaterial")
-{
-    if (texture)
+    for (u32 i = 0; i < 4; ++i)
     {
-        m_texture = texture;
-    }
-    layer = 0;
-}
-
-void TextureMaterial::Bind(Shader *shader)
-{
-    (void)shader;
-    if (m_texture)
-    {
-        m_texture->Use(layer);
+        if (m_textures[i])
+        {
+            m_textures[i]->Use(i);
+            shader->SetInt(FormatText("texture%d", i), i);
+        }
     }
 }
-void TextureMaterial::SetTexture(Texture2D *texture)
-{
-    m_texture = texture;
-}
-
 MeshBuffer::MeshBuffer(bool dynamic)
 {
     m_vbo = 0;
@@ -214,7 +233,7 @@ Mesh::Mesh(const VertexFormat &vertexFormat, bool dynamic) : m_vertexFormat(vert
 Mesh::~Mesh()
 {
 
-    Release();
+   
 }
 
 Surface *Mesh::AddSurface(u32 material)
@@ -232,7 +251,6 @@ Surface *Mesh::GetSurface(u32 index)
 
 int Mesh::AddMaterial(Material *material)
 {
-
     m_materials.push_back(material);
     return (int)m_materials.size() - 1;
 }
@@ -408,7 +426,7 @@ void Surface::Init()
             buffer->size = e.size;
             buffer->usage = e.usage;
             buffer->name = "POSITION";
-            //    Log(1,"POSITION");
+            LogWarning("POSITION");
 
             AddBuffer(buffer);
         }
@@ -420,11 +438,11 @@ void Surface::Init()
             glGenBuffers(1, &buffer->id);
             glBindBuffer(GL_ARRAY_BUFFER, buffer->id);
             glEnableVertexAttribArray(j);
-            glVertexAttribPointer(j, 2, GL_FLOAT, GL_FALSE, (GLint)sizeof(Vec3), 0);
+            glVertexAttribPointer(j, (GLint)e.size, GL_FLOAT, GL_FALSE,  (GLint)e.size * sizeof(float), 0);
             buffer->size = e.size;
             buffer->usage = e.usage;
             buffer->name = "TEXCOORD0";
-            //  Log(1,"TEXCOORD0");
+            LogWarning("TEXCOORD0");
             AddBuffer(buffer);
         }
         else if (e.usage == VertexFormat::NORMAL)
@@ -434,16 +452,14 @@ void Surface::Init()
             glGenBuffers(1, &buffer->id);
             glBindBuffer(GL_ARRAY_BUFFER, buffer->id);
             glEnableVertexAttribArray(j);
-            glVertexAttribPointer(j, 3, GL_FLOAT, GL_FALSE, (GLint)sizeof(Vec3), 0);
+            glVertexAttribPointer(j, (GLint)e.size, GL_FLOAT, GL_TRUE,  (GLint)e.size * sizeof(float), 0);
             buffer->size = e.size;
             buffer->usage = e.usage;
             buffer->name = "NORMAL";
-            //   Log(1,"NORMAL");
+            LogWarning("NORMAL");
             AddBuffer(buffer);
         }
-        else
-
-            if (e.usage == VertexFormat::TANGENT)
+        else if (e.usage == VertexFormat::TANGENT)
         {
             flags |= VBO_TANGENT;
 
@@ -452,7 +468,7 @@ void Surface::Init()
             glBindBuffer(GL_ARRAY_BUFFER, buffer->id);
 
             glEnableVertexAttribArray(j);
-            glVertexAttribPointer(j, 3, GL_FLOAT, GL_FALSE, (GLint)sizeof(Vec3), 0);
+            glVertexAttribPointer(j, (GLint)e.size, GL_FLOAT, GL_FALSE,  (GLint)e.size * sizeof(float), 0);
 
             buffer->size = e.size;
             buffer->usage = e.usage;
@@ -468,10 +484,12 @@ void Surface::Init()
             glBindBuffer(GL_ARRAY_BUFFER, buffer->id);
 
             glEnableVertexAttribArray(j);
-            glVertexAttribPointer(j, (GLint)e.size, GL_FLOAT, GL_FALSE, (GLint)e.size * sizeof(float), (void *)(0));
+            glVertexAttribPointer(j, (GLint)e.size, GL_FLOAT, GL_TRUE, (GLint)e.size * sizeof(float), (void *)(0));
+           
             buffer->size = e.size;
             buffer->usage = e.usage;
             buffer->name = "COLOR";
+            LogWarning("COLOR");
 
             AddBuffer(buffer);
         }

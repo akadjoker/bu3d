@@ -15,7 +15,8 @@ char* LoadTextFile(const char *fileName);
 
 unsigned char *LoadDataFile(const char *fileName, unsigned int *bytesRead);
  bool SaveTextFile(const char *fileName, char *text);
-
-void LogError( const char *msg, ... );
-void LogInfo( const char *msg, ... );
-void LogWarning( const char *msg, ... );
+ const char *FormatText(const char *text, ...);
+ 
+ void LogError(const char *msg, ...);
+ void LogInfo(const char *msg, ...);
+ void LogWarning(const char *msg, ...);

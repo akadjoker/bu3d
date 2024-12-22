@@ -30,10 +30,12 @@ struct SkinVertex
 class Material
 {
 public:
-    Material() { m_name = "Material"; }
-    virtual ~Material() { Release(); }
+    Material();
+    virtual ~Material();
 
     Material(const String &name) { m_name = name; }
+    Material(Texture2D *texture) ;
+    Material(const String &name,Texture2D *texture);
 
     Material(const Material &) = delete;
     Material &operator=(const Material &) = delete;
@@ -46,6 +48,10 @@ public:
     bool operator==(const Material &m) const { return (m_name == m.m_name); }
     bool operator!=(const Material &m) const { return (m_name != m.m_name); }
 
+    void SetTexture(Texture2D *texture, u32 layer);
+    void SetCastShadows(bool castShadows) { m_castShadows = castShadows; }
+    bool GetCastShadows() const { return m_castShadows; }
+
     virtual void Release() {};
     virtual void Bind(Shader *shader);
 
@@ -54,25 +60,12 @@ private:
     friend class MeshBuilder;
     friend class Surface;
 
+    Texture2D *m_textures[4];
+    bool m_castShadows = true;
+
     String m_name;
 };
 
-class TextureMaterial : public Material
-{
-public:
-    TextureMaterial(Texture2D *texture);
-    void SetTexture(Texture2D *texture);
-
-    TextureMaterial(const TextureMaterial &) = delete;
-    TextureMaterial &operator=(const TextureMaterial &) = delete;
-    TextureMaterial(TextureMaterial &&) = delete;
-    TextureMaterial &operator=(TextureMaterial &&) = delete;
-
-private:
-    u32 layer;
-    Texture2D *m_texture{nullptr};
-    void Bind(Shader *shader);
-};
 
 class VertexFormat
 {
