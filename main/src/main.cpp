@@ -1,239 +1,175 @@
-
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-
-
 #include "Core.hpp"
-#include "Render.hpp"
+#include "Math.hpp"
+#include "Batch.hpp"
+#include "Mesh.hpp"
 #include "Scene.hpp"
 
-  
- int screenWidth = 1024 ;
- int screenHeight = 768 ;
-
-
-
-
-int main()  
+int main()
 {
 
-    Device      device;
-
-    
-
-    device.Create(screenWidth, screenHeight, "Hello World");
-
-    Driver::Instance().Init();
-    Driver::Instance().Resize(screenWidth, screenHeight);
-
-
+    Device device;
+    device.Init("OpenGL Device", 800, 600, true);
 
 
 
     RenderBatch batch;
-    Shader      shader;
-    Font      font;
-    Scene      scene;
+    batch.Init(1, 1024);
+    Assets::Instance().SetFlipTexture(false);
+    Shader *shader = Assets::Instance().GetShader("default");
+
+    Font font;
+  
+    font.LoadDefaultFont();
+    font.SetBatch(&batch);
+    font.SetSize(12);
+
+    Vec3 cameraPos = Vec3(0.0f, 2.0f, 3.0f);
+    Vec3 cameraFront = Vec3(0.0f, 0.0f, -1.0f);
+    Vec3 cameraUp = Vec3(0.0f, 1.0f, 0.0f);
+
+    float yaw = -90.0f;
+    float pitch = 0.0f;
+    float lastX = Input::GetMouseX();
+    float lastY = Input::GetMouseY();
+
+    Driver::Instance().SetClearColor(0.1f, 0.1f, 0.1f);
+
+    BoundingBox box;
+    box.min = Vec3(-0.5f, -0.5f, -0.5f);
+    box.max = Vec3(0.5f, 0.5f, 0.5f);
+
+    BoundingBox box2;
 
 
-    batch.Init(1,1024);
-
-     font.LoadDefaultFont();
-     font.SetBatch(&batch);
-     font.SetSize(12);
-
-
-
-
-     const char *vShader = GLSL(
-         layout(location = 0) in vec3 position;
-         layout(location = 1) in vec2 texCoord;
-         layout(location = 2) in vec4 color;
-
-         uniform mat4 model;
-         uniform mat4 view;
-         uniform mat4 projection;
-         
-
-         out vec2 TexCoord;
-         out vec4 vertexColor;
-         void main() {
-             gl_Position = projection * view * model * vec4(position, 1.0);
-             TexCoord = texCoord;
-             vertexColor = color;
-         });
-
-     const char *fShader = GLSL(
-         in vec2 TexCoord;
-         out vec4 color;
-         in vec4 vertexColor;
-         uniform sampler2D texture0;
-         void main() {
-             color = texture(texture0, TexCoord) * vertexColor;
-         });
-
-     shader.Create(vShader, fShader);
-     shader.LoadDefaults();
-     shader.SetInt("texture0", 0);
-
-
-    scene.Init();
-
-    VertexFormat::Element VertexElements[] =
+    while (device.Running())
     {
-        VertexFormat::Element(VertexFormat::POSITION, 3),
-        VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
-        VertexFormat::Element(VertexFormat::NORMAL, 3),
-    }; 
-
-
-
-    Camera3D *camera = scene.GetMainCamera();
-    camera->setPerspective(60, (float)screenWidth / (float)screenHeight, 0.5f, 1000.0f);
-    camera->setLocalPosition(Vec3(0, 1.5f, 5.0f));
-
-    Mesh *cubeMesh = MeshBuilder::Instance().CreateCube(VertexFormat(VertexElements, 3),1,1,1);
-    
-    //System::Instance().ChangeDirectory("../");
-
-    #if defined(_WIN32)
-
-        Driver::Instance().SetTexturePath("E:\\projectos\\bu3d\\bin\\assets\\textures\\");
-    #else
-        Driver::Instance().SetTexturePath("assets/textures/");
-    #endif
-
-    cubeMesh->AddMaterial(new Material(Driver::Instance().LoadTexture("tiles.jpg")));
-
-     Mesh *planeMesh = MeshBuilder::Instance().CreatePlane(VertexFormat(VertexElements, 3), 10, 10, 8, 8);
-     planeMesh->AddMaterial(new Material(Driver::Instance().LoadTexture("wood.png")));
-
-
-
-    Model *plane = scene.AddModel(planeMesh);
-    plane->setLocalPosition(Vec3(0, 0.5, 0));
-    plane->setLocalScale(Vec3(10, 1, 10));
-   // plane->SetShadow(true);
-
-
-    Model *cube = scene.AddModel(cubeMesh);
-    cube->setLocalPosition(Vec3(0, 1, 0));
-    cube->SetCastShadows(true);
-
-    cube = scene.AddModel(cubeMesh);
-    cube->setLocalPosition(Vec3(0, 1.5, 1.5));
-    cube->SetCastShadows(true);
-
-     
-
-    Driver::Instance().SetClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-    float mouseSensitivity = 0.1f;
-
-
-
-
-    float yaw = 0;
-    float pitch = 0;
-
-    while (device.Run())
-    {
-
-        device.Update();
-        scene.Update(device.GetFrameTime());
-
-        Driver::Instance().Clear();
-
-      //  Driver::Instance().SetBlend(false);
-     //   Driver::Instance().SetDepthTest(true);
-
-
-        if (Keyboard::Down(KEY_W))
-        {
-            camera->Move(0,0,-0.1f);
-        }
-        if (Keyboard::Down(KEY_S))
-        {
-            camera->Move(0,0,0.1f);
-        }
-        if (Keyboard::Down(KEY_A))
-        {
-            camera->Move(-0.1f,0,0);
-        }
-        if (Keyboard::Down(KEY_D))
-        {
-            camera->Move(0.1f,0,0);
-        }
-
-        if (Keyboard::Down(KEY_Q))
-        {
-            camera->Turn(0,0.1f,0,false);
-        }
-        if (Keyboard::Down(KEY_E))
-        {
-            camera->Turn(0,-0.1f,0,false);
-        }
-
+        Driver::Instance().Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Driver::Instance().SetViewport(0, 0, device.GetWidth(), device.GetHeight());
+        
         
 
+        float cameraSpeed = 35.5f * device.GetFrameTime();
 
-        if (Mouse::Down(0))
+        if (Input::IsMouseButtonDown(1))
         {
-            yaw += Mouse::dX() * mouseSensitivity; 
-            pitch -= Mouse::dY() * mouseSensitivity; 
-            if (pitch > 89.0f   ) pitch = 89.0f;
-            if (pitch < -89.0f  ) pitch = -89.0f;
-            camera->Rotate(pitch, yaw, 0.0f, false);
+            float xpos = Input::GetMouseX();
+            float ypos = Input::GetMouseY();
+            float xoffset = xpos - lastX;
+            float yoffset = lastY - ypos;
+
+            float sensitivity = 0.1f;
+            xoffset *= sensitivity;
+            yoffset *= sensitivity;
+
+            yaw += xoffset;
+            pitch += yoffset;
+
+            if (pitch > 89.0f)
+                pitch = 89.0f;
+            if (pitch < -89.0f)
+                pitch = -89.0f;
+
+            Vec3 front;
+            front.x = Cos(yaw) * Cos(pitch);
+            front.y = Sin(pitch);
+            front.z = Sin(yaw) * Cos(pitch);
+            cameraFront = Vec3::Normalize(front);
         }
 
-    Mat4 view = camera->getView(); 
-    Mat4 projection =camera->getProjection();
-    Mat4 identity = Mat4::Identity();
+        lastX = Input::GetMouseX();
+        lastY = Input::GetMouseY();
 
-    scene.Render();
+        if (Input::IsKeyDown(SDLK_w))
+        {
+            cameraPos += cameraSpeed * cameraFront;
+        }
+        if (Input::IsKeyDown(SDLK_s))
+        {
+            cameraPos -= cameraSpeed * cameraFront;
+        }
+        if (Input::IsKeyDown(SDLK_a))
+        {
+            cameraPos -= Vec3::Normalize(Vec3::Cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+        if (Input::IsKeyDown(SDLK_d))
+        {
+            cameraPos += Vec3::Normalize(Vec3::Cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
 
-
-    shader.Use();
-    shader.SetMatrix4("view", &view.c[0][0]);
-    shader.SetMatrix4("projection", &projection.c[0][0]);
-    shader.SetMatrix4("model", &identity.c[0][0]);
-
-
-
-    batch.Grid(10, 10);
-    batch.Render();
-
-    Mat4 ortho = Mat4::Ortho(0.0f, 1024.0f, 720.0f, 0.0f, -1.0f, 1.0f);
-    shader.Use();
-    shader.SetMatrix4("model", &identity.c[0][0]);
-    shader.SetMatrix4("view", &identity.c[0][0]);
-    shader.SetMatrix4("projection", &ortho.c[0][0]);
-    batch.SetColor(255, 255, 255, 255);
-
-    Driver::Instance().SetBlend(true);
-    Driver::Instance().SetBlendMode(BlendMode::BLEND);
-    Driver::Instance().SetDepthTest(false);
-    Driver::Instance().SetDepthWrite(false);
-
-    font.Print(10, 20, " %d  %f",device.GetFPS(),device.GetFrameTime());
-
-    batch.Render();
-
-    device.Flip();
+        //  position.x -= 0.1f;
 
 
+        Mat4 model;
+        Mat4 view = Mat4::LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        Mat4 projection = Mat4::Perspective(45.0f, (float)device.GetWidth() / (float)device.GetHeight(), 0.1f, 1000.0f);
+        Driver::Instance().SetTransform(VIEW_MATRIX, view);
+        Driver::Instance().SetTransform(PROJECTION_MATRIX, projection);
+        Driver::Instance().EnableBlend(false);
+        Driver::Instance().EnableDepthTest(true);
+        Driver::Instance().EnableCullFace(true);
+        Driver::Instance().UpdateFrustum();
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+
+          //  box2.expand(box);
+
+      //  box2.min = box2.min;
+     //   box2.max = box2.max;
+
+        Mat4 transform;
+        transform.identity();
+      //  transform.translate(0, 1.5, 0);
+
+        //   transform = Mat4::RotateY(transform, device.GetTime());
+          transform = Mat4::Translate(transform, Vec3(0.0f, 5.0f, 0.0f));
+          transform = Mat4::Scale(transform, Vec3(0.2f, 0.2f, 0.2f));
+         transform = Mat4::Rotate(transform,device.GetTime(), Vec3(1.0f, 0.0f, 0.0f));
+         transform = Mat4::Rotate(transform, device.GetTime(), Vec3(0.0f, 1.0f, 0.0f));
+         transform = Mat4::Rotate(transform, device.GetTime(), Vec3(0.0f, 0.0f, 1.0f));
+
+        box.transform(box2,transform);
+
+        shader->Bind();
+        shader->SetMatrix4("model", model.m);
+        shader->SetMatrix4("view", view.m);
+        shader->SetMatrix4("projection", projection.m);
+
+        batch.Box(box.min, box.max);
+        batch.Box(box2.min, box2.max);
+        batch.Grid(20, 0.1f, true);
+        batch.Render();
+
+        model.identity();
+        view.identity();
+        projection = Mat4::Orthographic(0.0f, (float)device.GetWidth(), (float)device.GetHeight(), 0.0f, -1.0f, 1.0f);
+
+        shader->Bind();
+        shader->SetMatrix4("model", model.m);
+        shader->SetMatrix4("view", view.m);
+        shader->SetMatrix4("projection", projection.m);
+
+        Driver::Instance().EnableBlend(true);
+        Driver::Instance().EnableDepthTest(false);
+        Driver::Instance().EnableCullFace(false);
+        Driver::Instance().SetBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        batch.SetColor(1, 1, 1);
+        font.SetSize(16);
+
+        bool cull = Driver::Instance().IsInFrustum(box.min, box.max);
+
+        font.Print(10, 20, " %d  %f", device.GetFPS(), device.GetFrameTime());
+        font.Print(10, 40, "Cull: %d", cull);
+
+        batch.Render();
+
+        device.Swap();
     }
 
-    scene.Release();
-    font.Release();
     batch.Release();
-    shader.Release();
-
-  
-    Driver::Instance().Release();
+    font.Release();
+    
     device.Close();
-  
- 
 
     return 0;
 }
