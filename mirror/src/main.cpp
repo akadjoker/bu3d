@@ -4,38 +4,7 @@
 #include "Mesh.hpp"
 #include "Scene.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
-void PrintMatrix(const Mat4& matrix)
-{
-    printf("Mat4: \n");
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            printf("%f ", matrix.at(i, j));
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void PrintGlmMatrix(const glm::mat4& matrix)
-{
-    printf("glm: \n");
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            printf("%f ", matrix[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
+  
 
 Mat4 calculateReflectionMatrix(const Vec3& point , const Vec3& normal)
 {
