@@ -64,7 +64,7 @@ int main()
     Assets::Instance().SetFlipTexture(false);
     Shader *shader = Assets::Instance().GetShader("default");
     //Texture2D *texture0 = Assets::Instance().LoadTexture("assets/terrain-texture.jpg"); 
-    Texture2D *texture0 = Assets::Instance().LoadTexture("assets/Texture.jpg"); 
+    Texture2D *texture0 = Assets::Instance().LoadTexture("assets/texture.jpg"); 
     
     Texture2D *texture1 = Assets::Instance().LoadTexture("assets/detail.jpg"); 
 
@@ -90,7 +90,7 @@ int main()
    Heightmap heightmap(25.0f);
 
 //    heightmap.LoadImage("assets/heightmap.png");
-    heightmap.LoadImage("assets/Terrain.png");
+    heightmap.LoadImage("assets/terrain.png");
    // heightmap.Save("assets/heightmap.raw", 24);
 
     // TerrainChunk chunk(33, 32.0f, 0, 0, 16.0f);
@@ -109,7 +109,7 @@ int main()
     {
    
 
-        float cameraSpeed = 35.5f * device.GetFrameTime();
+        float cameraSpeed = 315.5f * device.GetFrameTime();
 
         if (Input::IsMouseButtonDown(1))
         {

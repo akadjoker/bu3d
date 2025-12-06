@@ -101,18 +101,18 @@ bool Terrain::preRenderLODCalculations()
     const Vec3 cameraRotation = Driver::Instance().GetCameraRotation();
     const Vec3 cameraPosition       = Driver::Instance().GetCameraPosition();
 
-    if( (  Abs( cameraRotation.x - OldCameraRotation.x ) < CameraRotationDelta ) && 
-            ( Abs( cameraRotation.y - OldCameraRotation.y ) < CameraRotationDelta ) &&
-			( Abs( cameraRotation.z - OldCameraRotation.z ) < CameraRotationDelta ) )
-		{
-			if( ( Abs( cameraPosition.x - OldCameraPosition.x ) < CameraMovementDelta ) && 
-				( Abs( cameraPosition.y - OldCameraPosition.y ) < CameraMovementDelta ) &&
-				( Abs( cameraPosition.z - OldCameraPosition.z ) < CameraMovementDelta ) )
-			{
+    // if( (  Abs( cameraRotation.x - OldCameraRotation.x ) < CameraRotationDelta ) && 
+    //         ( Abs( cameraRotation.y - OldCameraRotation.y ) < CameraRotationDelta ) &&
+	// 		( Abs( cameraRotation.z - OldCameraRotation.z ) < CameraRotationDelta ) )
+	// 	{
+	// 		if( ( Abs( cameraPosition.x - OldCameraPosition.x ) < CameraMovementDelta ) && 
+	// 			( Abs( cameraPosition.y - OldCameraPosition.y ) < CameraMovementDelta ) &&
+	// 			( Abs( cameraPosition.z - OldCameraPosition.z ) < CameraMovementDelta ) )
+	// 		{
 
-				return false;
-			}
-		}
+	// 			return false;
+	// 		}
+	// 	}
 
         OldCameraPosition = cameraPosition;
         OldCameraRotation = cameraRotation;

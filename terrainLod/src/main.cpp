@@ -63,7 +63,7 @@ int main()
     batch.Init(1, 1024);
     Assets::Instance().SetFlipTexture(false);
     Shader *shader = Assets::Instance().GetShader("default");
-    Texture2D *texture0 = Assets::Instance().LoadTexture("assets/Texture.jpg"); 
+    Texture2D *texture0 = Assets::Instance().LoadTexture("assets/texture.jpg"); 
     Texture2D *texture1 = Assets::Instance().LoadTexture("assets/detail.jpg"); 
 
     Font font;
@@ -85,16 +85,16 @@ int main()
  //   MeshManager::Instance().ScaleMesh(floor, 20.0f, 1.0f, 20.0f);
    
 
-    Heightmap heightmap(40.0f);
+    //Heightmap heightmap(40.0f);
     //heightmap.LoadImage("assets/heightmap.png");
-    heightmap.Load("assets/Terrain.raw", 8);
+    //heightmap.Load("assets/terrain.raw", 8);
    // heightmap.Save("assets/heightmap.raw", 24);
 
     // TerrainChunk chunk(33, 32.0f, 0, 0, 16.0f);
     // chunk.GenerateMesh(heightmap);
 
     Terrain terrain(Vec3(0.0f, -300.0f, 0.0f), Vec3(8.0f, 10.0f, 8.0f), 17, 4);
-    terrain.LoadTerrain("assets/Terrain.raw.png", 28.0f);
+    terrain.LoadTerrain("assets/terrain.png", 48.0f);
   //  terrain.LoadHeightmap(heightmap);
 
     //    TerrainChunk(int res, float chunkSize,   int chunkX, int chunkZ, float detailScale = 16.0f);

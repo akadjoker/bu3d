@@ -67,7 +67,7 @@ int main()
     batch.Init(1, 1024);
     Assets::Instance().SetFlipTexture(false);
     Shader *shader = Assets::Instance().GetShader("default");
-    Texture2D *texture0 = Assets::Instance().LoadTexture("assets/Texture.jpg"); 
+    Texture2D *texture0 = Assets::Instance().LoadTexture("assets/texture.jpg"); 
     
 
 
